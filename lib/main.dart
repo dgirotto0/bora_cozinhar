@@ -7,8 +7,9 @@ void main() {
   runApp(
       ChangeNotifierProvider<IngredientsController>(
         create: (context) => IngredientsController(),
-        child: BoraCozinhar()),
-      );
+        child: BoraCozinhar(),
+      )
+  );
 }
 
 class BoraCozinhar extends StatelessWidget {

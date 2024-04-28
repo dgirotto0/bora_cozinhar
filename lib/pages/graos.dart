@@ -1,10 +1,15 @@
 import 'package:bora_cozinhar/assets/colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../constants/ingredients_controller.dart';
 import 'carnes.dart';
 import '../constants/checkbox.dart';
 
 class Graos extends StatefulWidget {
+  final List<String> selectedVegetables;
+
+  const Graos({Key? key, required this.selectedVegetables}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -89,7 +94,8 @@ class _HomePageState extends State<Graos> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Carnes()),
+                  MaterialPageRoute(
+                    builder: (context) => Carnes(selectedVegetables: Provider.of<IngredientsController>(context).selectedVegetables)),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -115,15 +121,15 @@ class _HomePageState extends State<Graos> {
         ),
       ),
       leading: RoundedCheckbox(
-        isChecked: selectedVegetables.contains(vegetableName),
+        isChecked: Provider.of<IngredientsController>(context).selectedVegetables.contains(vegetableName),
         onChanged: (newValue) {
-          setState(() {
-            if (newValue) {
-              selectedVegetables.add(vegetableName);
-            } else {
-              selectedVegetables.remove(vegetableName);
-            }
-          });
+          final ingredientsController = Provider.of<IngredientsController>(context, listen: false);
+          final currentVegetables = ingredientsController.selectedVegetables;
+          if (newValue) {
+            ingredientsController.updateSelectedVegetables(currentVegetables..add(vegetableName));
+          } else {
+            ingredientsController.updateSelectedVegetables(currentVegetables..remove(vegetableName));
+          }
         },
       ),
     );

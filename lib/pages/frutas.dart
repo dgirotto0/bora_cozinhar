@@ -1,11 +1,18 @@
 import 'package:bora_cozinhar/assets/colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/checkbox.dart';
+import '../constants/ingredients_controller.dart';
 import 'laticíneos.dart';
 
 class Frutas extends StatefulWidget {
+
+  final List<String> selectedVegetables;
+
+  const Frutas({Key? key, required this.selectedVegetables}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -90,7 +97,8 @@ class _HomePageState extends State<Frutas> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Laticineos()),
+                  MaterialPageRoute(
+                      builder: (context) => Laticineos(selectedVegetables: Provider.of<IngredientsController>(context).selectedVegetables)),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -116,15 +124,15 @@ class _HomePageState extends State<Frutas> {
         ),
       ),
       leading: RoundedCheckbox(
-        isChecked: selectedVegetables.contains(vegetableName),
+        isChecked: Provider.of<IngredientsController>(context, listen: false).selectedVegetables.contains(vegetableName),
         onChanged: (newValue) {
-          setState(() {
-            if (newValue) {
-              selectedVegetables.add(vegetableName);
-            } else {
-              selectedVegetables.remove(vegetableName);
-            }
-          });
+          List<String> newVegetables = List.from(Provider.of<IngredientsController>(context, listen: false).selectedVegetables);
+          if (newValue) {
+            newVegetables.add(vegetableName);
+          } else {
+            newVegetables.remove(vegetableName);
+          }
+          Provider.of<IngredientsController>(context, listen: false).updateSelectedVegetables(newVegetables);
         },
       ),
     );

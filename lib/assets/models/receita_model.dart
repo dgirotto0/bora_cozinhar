@@ -1,25 +1,21 @@
 class Receita {
   final String nome;
   final String tempoPreparo;
-  final List<Ingrediente> ingredientes;
-  final String imagemUrl;
-  final String descricao;
+  late final List<Ingrediente> ingredientes;
+  late final String descricao;
 
   Receita({
     required this.nome,
-    required this.tempoPreparo,
-    required this.ingredientes,
-    required this.imagemUrl,
+    this.tempoPreparo = "",  // Set default value
+    this.ingredientes = const [],  // Set default value
     required this.descricao,
   });
 }
 
 class Ingrediente {
-  final String quantidade;
   final String nome;
 
   Ingrediente({
-    required this.quantidade,
     required this.nome,
   });
 }
