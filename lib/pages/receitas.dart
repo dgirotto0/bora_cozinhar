@@ -1,15 +1,17 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../assets/colors/colors.dart';
 import '../assets/models/receita_model.dart';
+import '../constants/error_message.dart';
 import '../constants/gemini.dart';
 import '../constants/receita_card.dart';
 
 class ReceitasPage extends StatefulWidget {
   final List<String>? selectedIngredients;
 
-  const ReceitasPage({Key? key, this.selectedIngredients, required String initialIngredients}) : super(key: key);
+  const ReceitasPage({super.key, this.selectedIngredients, required String initialIngredients});
 
   @override
   _ReceitasPageState createState() => _ReceitasPageState();
@@ -18,9 +20,11 @@ class ReceitasPage extends StatefulWidget {
 class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMixin {
   List<Receita> receitas = [];
   late GenerativeModel model;
-  late AnimationController _controller; // Declare the animation controller
+  late AnimationController _controller;
+  final Connectivity _connectivity = Connectivity();
 
   bool _showLoadingPopup = false;
+  bool _noInternet = false;
 
   @override
   void initState() {
@@ -29,18 +33,31 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
       model: 'gemini-pro',
       apiKey: 'AIzaSyBe9bB9sVNsJcxCADMUMz5NcBWscDAm9AY',
     );
-    _controller = AnimationController( // Initialize the controller in initState
+    _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     );
+    _checkInternetConnection();
     _buscarReceitas();
   }
 
+  Future<void> _checkInternetConnection() async {
+    final connectivityResults = await _connectivity.checkConnectivity();
+    if (connectivityResults.contains(ConnectivityResult.wifi) ||
+        connectivityResults.contains(ConnectivityResult.mobile)) {
+      _buscarReceitas();
+    } else {
+      setState(() {
+        _noInternet = true;
+      });
+    }
+  }
+
   Future<void> _buscarReceitas() async {
-    const numeroReceitas = 3;
+    const numeroReceitas = 3  ;
 
     setState(() {
-      _showLoadingPopup = true; // Show popup on starting generation
+      _showLoadingPopup = true;
     });
 
     while (receitas.length < numeroReceitas) {
@@ -48,15 +65,15 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
     }
 
     setState(() {
-      _showLoadingPopup = false; // Hide popup after generation
+      _showLoadingPopup = false;
     });
   }
 
   Future<void> _buscarUmaReceita() async {
-    const numeroReceitas = 3;
+    const numeroReceitas = 2;
 
     for (int i = 0; i < numeroReceitas; i++) {
-      if (!mounted) return; // Check if widget is still mounted before setState
+      if (!mounted) return;
 
       final generativeAI = GenerativeAI(
         apiKey: 'AIzaSyBe9bB9sVNsJcxCADMUMz5NcBWscDAm9AY',
@@ -71,12 +88,13 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
 
       // Handle empty or incomplete response
       if (receitaNomeTempoParts == null || receitaNomeTempoParts.length < 2) {
-        print('Não foi possível encontrar receitas com esses ingredientes. Tente novamente mais tarde.');
+        showErrorMessage('Não foi possível encontrar receitas com esses ingredientes. Tente novamente.');
         continue; // Skip to the next iteration
       }
 
       final nomeReceita = receitaNomeTempoParts[0];
       final tempoPreparo = receitaNomeTempoParts[1].split(' ')[0];
+
 
       final promptCompleto =
           "Complete a receita $nomeReceita com tempo de preparo de $tempoPreparo minutos, utilizando os ingredientes: ${widget.selectedIngredients?.join(', ')}, varie entre doces e salgados";
@@ -87,19 +105,22 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
       final receitaCompletaParts = textoReceitaCompleta?.split('\n\n');
       final ingredientes = receitaCompletaParts?[1].split('\n')
           .map((ingrediente) => Ingrediente(nome: ingrediente))
-          .toList() ?? const [];
-      final descricao = receitaCompletaParts!.length > 2 ? receitaCompletaParts.sublist(2).join('\n') : '';
+          .toList() ??
+          const [];
+      final descricao = receitaCompletaParts!.length > 2
+          ? receitaCompletaParts.sublist(2).join('\n')
+          : '';
 
       final receita = Receita(
-        nome: nomeReceita,
-        tempoPreparo: tempoPreparo,
-        ingredientes: ingredientes,
-        descricao: descricao,
+          nome: nomeReceita,
+          tempoPreparo: tempoPreparo,
+          ingredientes: ingredientes,
+          descricao: descricao,
       );
 
       receitas.add(receita);
     }
-    if (mounted) setState(() {}); // Update state only if widget is mounted
+    if (mounted) setState(() {});
   }
 
   @override
@@ -123,9 +144,31 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Stack( // Use Stack to position popup on top of content
+      body: Stack(
         children: [
-          Center(
+          _noInternet
+              ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40), // Add spacing above the icon
+                const Icon(
+                  Icons.wifi_off, // Use the wifi_off icon
+                  size: 72, // Adjust icon size as needed
+                  color: Colors.red, // Set icon color
+                ),
+                const SizedBox(height: 20), // Add spacing between icon and text
+                Text(
+                  'Sem conexão com a internet!',
+                  style: GoogleFonts.abel(
+                    fontSize: 18.0,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          )
+              : Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

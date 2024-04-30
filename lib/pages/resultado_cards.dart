@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../assets/colors/colors.dart';
 import '../assets/models/receita_model.dart';
 import '../constants/receita_card.dart';
 
@@ -9,22 +7,18 @@ class ReceitasResultadosPage extends StatelessWidget {
   final List<Receita> receitas;
 
 
-  const ReceitasResultadosPage({Key? key, required this.receitas}) : super(key: key);
+  const ReceitasResultadosPage({super.key, required this.receitas});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Paleta.black,
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: Text(
           'AICook',
-          style: GoogleFonts.abel(
-            fontSize: 22,
-            color: Paleta.yellow,
-          ),
+          style: GoogleFonts.montserrat(fontSize: 20, color: Colors.yellow),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
       body: Stack(
         children: [

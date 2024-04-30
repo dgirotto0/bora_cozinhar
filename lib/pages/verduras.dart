@@ -1,132 +1,60 @@
-import 'package:bora_cozinhar/assets/colors/colors.dart';
+import 'package:AICook/pages/vegetarianos.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../constants/checkbox.dart';
 import '../constants/ingredients_controller.dart';
-import 'legumes.dart';
+import 'base/base_page.dart';
+import '../../constants/language_state.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
+class VerdurasPage extends StatelessWidget {
+  final List<String> selectedVegetables;
 
-class _HomePageState extends State<HomePage> {
-  bool isEnglish = false;
-  List<String> selectedVegetables = [];
-  String selectedIngredients = "";
+  const VerdurasPage({super.key, required this.selectedVegetables});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Paleta.black,
-      appBar: AppBar(
-        title: Text(
-          'AICook',
-          style: GoogleFonts.abel(fontSize: 22, color: Paleta.yellow),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.translate,
-              color: Paleta.yellow,
-            ),
-            onPressed: () {
-              setState(() {
-                isEnglish = !isEnglish;
-              });
-            },
-          ),
-        ],
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Quais vegetais você tem em casa?',
-              style: GoogleFonts.abel(fontSize: 23, color: Paleta.yellow),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        buildCheckbox('Alface'),
-                        buildCheckbox('Espinafre'),
-                        buildCheckbox('Rúcula'),
-                        buildCheckbox('Abobrinha'),
-                        buildCheckbox('Berinjela'),
-                        buildCheckbox('Batata'),
-                        buildCheckbox('Ervilha'),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        buildCheckbox('Cenoura'),
-                        buildCheckbox('Brócolis'),
-                        buildCheckbox('Couve'),
-                        buildCheckbox('Tomate'),
-                        buildCheckbox('Cebola'),
-                        buildCheckbox('Pepino'),
-                        buildCheckbox('Pimentão'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Legumes(selectedVegetables: Provider.of<IngredientsController>(context).selectedVegetables)),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Paleta.yellow, // Set button color to black
-              ),
-              child: const Icon(
-                Icons.arrow_forward_sharp,
-                color: Paleta.white,
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+    final languageState = Provider.of<LanguageState>(context);
+    final isEnglish = languageState.isEnglish;
 
-  Widget buildCheckbox(String vegetableName) {
-    return ListTile(
-      title: Text(
-        vegetableName,
-        style: GoogleFonts.abel(
-          fontSize: 20,
-          color: Paleta.white,
-        ),
-      ),
-      leading: RoundedCheckbox(
-        isChecked: Provider.of<IngredientsController>(context).selectedVegetables.contains(vegetableName),
-        onChanged: (newValue) {
-          final ingredientsController = Provider.of<IngredientsController>(context, listen: false);
-          final currentVegetables = ingredientsController.selectedVegetables;
-          if (newValue) {
-            ingredientsController.updateSelectedVegetables(currentVegetables..add(vegetableName));
-          } else {
-            ingredientsController.updateSelectedVegetables(currentVegetables..remove(vegetableName));
-          }
-        },
-      ),
+    final ingredientNames = isEnglish
+        ? const [
+      'Lettuce',
+      'Spinach',
+      'Arugula',
+      'Watercress',
+      'Kale',
+      'Broccoli',
+      'Carrot',
+      'Tomato',
+      'Cucumber',
+      'Zucchini',
+      'Bell pepper',
+      'Chives',
+      'Cilantro',
+      'Parsley',
+    ]
+        : const [
+      'Alface',
+      'Espinafre',
+      'Rúcula',
+      'Agrião',
+      'Couve',
+      'Brócolis',
+      'Cenoura',
+      'Tomate',
+      'Pepino',
+      'Abobrinha',
+      'Pimentão',
+      'Cebolinha',
+      'Coentro',
+      'Salsinha',
+    ];
+
+    return BasePage(
+      pageTitle: isEnglish
+          ? 'What vegetables do you have at home?'
+          : 'Quais verduras você tem em casa?',
+      ingredientNames: ingredientNames,
+      nextPage: VegPage(selectedVegetables: Provider.of<IngredientsController>(context).selectedVegetables),
     );
   }
 }

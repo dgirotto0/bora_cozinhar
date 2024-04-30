@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RoundedCheckbox extends StatelessWidget {
@@ -6,10 +5,10 @@ class RoundedCheckbox extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
 
   const RoundedCheckbox({
-    Key? key,
+    super.key,
     required this.isChecked,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
