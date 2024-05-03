@@ -2,6 +2,7 @@ import 'package:AICook/pages/receitas.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../assets/colors/colors.dart';
 import '../constants/ingredients_controller.dart';
 import '../../constants/language_state.dart'; // Import LanguageState
 
@@ -47,17 +48,21 @@ class _HomePageState extends State<VegPage> {
     return ChangeNotifierProvider(
       create: (context) => ingredientsController,
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Paleta.fundoBranco,
         appBar: AppBar(
           title: Text(
             isEnglish ? "AICook" : 'AICook',
-            style: GoogleFonts.montserrat(fontSize: 20, color: Colors.yellow),
+            style: GoogleFonts.montserrat(
+                fontSize: 22,
+                color: Paleta.laranjaPredominante,
+              fontWeight: FontWeight.w500
+            ),
           ),
           actions: [
             IconButton(
               icon: const Icon(
                 Icons.translate,
-                color: Colors.yellow,
+                color: Paleta.laranjaPredominante,
               ),
               onPressed: () async {
                 languageState.toggleLanguage();
@@ -107,7 +112,7 @@ class _HomePageState extends State<VegPage> {
               },
             ),
           ],
-          backgroundColor: Colors.transparent,
+          backgroundColor: Paleta.laranjaSuave,
           elevation: 0,
         ),
         body: Center(
@@ -121,8 +126,8 @@ class _HomePageState extends State<VegPage> {
                     _currentTitle,
                     style: GoogleFonts.abel(
                         fontSize: 28,
-                        color: Colors.yellow,
-                        fontWeight: FontWeight.w500),
+                        color: Paleta.laranjaPredominante,
+                        fontWeight: FontWeight.w700),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
@@ -145,7 +150,7 @@ class _HomePageState extends State<VegPage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.yellow,
+                        backgroundColor: Paleta.laranjaPredominante,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(
@@ -154,7 +159,7 @@ class _HomePageState extends State<VegPage> {
                       'Next',
                       style: GoogleFonts.abel(
                           fontSize: 20,
-                          color: Colors.black,
+                          color: Paleta.textoBranco,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -173,7 +178,7 @@ class _HomePageState extends State<VegPage> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.grey[900],
+            color: Paleta.laranjaSuave,
             borderRadius: BorderRadius.circular(10),
           ),
           child: CheckboxListTile(
@@ -181,8 +186,8 @@ class _HomePageState extends State<VegPage> {
               ingredientName,
               style: GoogleFonts.abel(
                 fontSize: 20,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+                fontWeight: FontWeight.w700,
               ),
             ),
             value: ingredientsController.selectedVegetables.contains(ingredientName),
@@ -197,8 +202,8 @@ class _HomePageState extends State<VegPage> {
                 ingredientsController.updateSelectedVegetables(newVegetables);
               });
             },
-            activeColor: Colors.yellow,
-            checkColor: Colors.black,
+            activeColor: Paleta.laranjaPredominante,
+            checkColor: Paleta.textoBranco,
             controlAffinity: ListTileControlAffinity.platform,
           ),
         ),

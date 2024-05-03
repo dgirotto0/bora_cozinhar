@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,7 +32,7 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
     super.initState();
     model = GenerativeModel(
       model: 'gemini-pro',
-      apiKey: 'AIzaSyBe9bB9sVNsJcxCADMUMz5NcBWscDAm9AY',
+      apiKey: 'YOU_API_HERE', //TODO: your gemini pro api key here
     );
     _controller = AnimationController(
       vsync: this,
@@ -76,7 +77,7 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
       if (!mounted) return;
 
       final generativeAI = GenerativeAI(
-        apiKey: 'AIzaSyBe9bB9sVNsJcxCADMUMz5NcBWscDAm9AY',
+        apiKey: 'YOU_API_KEY', //TODO: your gemini pro api key here
       );
 
       final prompt = "Escreva uma receita com ${widget.selectedIngredients?.join(', ')}";
@@ -96,27 +97,31 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
       final tempoPreparo = receitaNomeTempoParts[1].split(' ')[0];
 
 
-      final promptCompleto =
-          "Complete a receita $nomeReceita com tempo de preparo de $tempoPreparo minutos, utilizando os ingredientes: ${widget.selectedIngredients?.join(', ')}, varie entre doces e salgados";
+      final promptCompleto = "Complete a receita $nomeReceita com tempo de preparo de $tempoPreparo minutos, utilizando os ingredientes: ${widget.selectedIngredients?.join(', ')}, varie entre doces e salgados";
       final contentCompleto = [Content.text(promptCompleto)];
       final responseCompleto = await generativeAI.model.generateContent(contentCompleto);
       final textoReceitaCompleta = responseCompleto.text;
-
       final receitaCompletaParts = textoReceitaCompleta?.split('\n\n');
       final ingredientes = receitaCompletaParts?[1].split('\n')
           .map((ingrediente) => Ingrediente(nome: ingrediente))
-          .toList() ??
-          const [];
+          .toList() ?? const [];
       final descricao = receitaCompletaParts!.length > 2
           ? receitaCompletaParts.sublist(2).join('\n')
           : '';
 
-      final receita = Receita(
-          nome: nomeReceita,
-          tempoPreparo: tempoPreparo,
-          ingredientes: ingredientes,
-          descricao: descricao,
-      );
+
+      final receitaMap = {
+        "titulo": nomeReceita,
+        "tempo_preparo": tempoPreparo,
+        "ingredientes": ingredientes.map((i) => i.nome).toList(),
+        "modo_de_preparo": descricao,
+      };
+
+
+      final receitaJson = jsonEncode(receitaMap);
+
+
+      final receita = Receita.fromJson(jsonDecode(receitaJson));
 
       receitas.add(receita);
     }
@@ -132,16 +137,17 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Paleta.black,
+      backgroundColor: Paleta.fundoBranco,
       appBar: AppBar(
         title: Text(
           'AICook',
-          style: GoogleFonts.abel(
+          style: GoogleFonts.montserrat(
             fontSize: 22,
-            color: Paleta.yellow,
+            color: Paleta.vermelhoVibrante,
+            fontWeight: FontWeight.w500
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Paleta.laranjaSuave,
         elevation: 0,
       ),
       body: Stack(
@@ -155,14 +161,14 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
                 const Icon(
                   Icons.wifi_off, // Use the wifi_off icon
                   size: 72, // Adjust icon size as needed
-                  color: Colors.red, // Set icon color
+                  color: Paleta.vermelhoVibrante, // Set icon color
                 ),
                 const SizedBox(height: 20), // Add spacing between icon and text
                 Text(
                   'Sem conexão com a internet!',
                   style: GoogleFonts.abel(
                     fontSize: 18.0,
-                    color: Colors.red,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -192,26 +198,33 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
 
   Widget _buildLoadingPopup() {
     return Center(
-      child: ClipRRect( // ClipRRect for rounded corners
-        borderRadius: BorderRadius.circular(10.0),
-        child: Container( // Container for background color
-          width: 250, // Adjust width as needed
-          height: 100, // Adjust height as needed
-          color: Colors.white.withOpacity(1),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(25),
+        child: Container(
+          width: 250,
+          height: 100,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.8),
+            border: Border.all(
+              color: Paleta.vermelhoVibrante,
+              width: 3,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: const Padding(
+            padding: EdgeInsets.all(20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(Paleta.yellow), // Set color
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Paleta.vermelhoVibrante),
                 ),
-                const SizedBox(width: 10.0),
+                SizedBox(width: 10),
                 Text(
                   'Gerando receitas...',
-                  style: GoogleFonts.abel(
-                    fontSize: 18.0,
-                    color: Colors.black,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
                   ),
                 ),
               ],

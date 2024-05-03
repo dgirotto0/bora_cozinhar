@@ -1,8 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../assets/colors/colors.dart';
 import 'essenciais.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -30,20 +29,21 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Paleta.fundoBranco,
       appBar: AppBar(
         title: Text(
           isEnglish ? "AICook" : 'AICook',
           style: GoogleFonts.montserrat(
             fontSize: 22,
-            color: Colors.yellow,
+            color: Paleta.laranjaPredominante,
+            fontWeight: FontWeight.w500,
           ),
         ),
         actions: [
           IconButton(
             icon: const Icon(
               Icons.translate,
-              color: Colors.yellow,
+              color: Paleta.laranjaPredominante,
             ),
             onPressed: () {
               setState(() {
@@ -52,7 +52,7 @@ class _WelcomePageState extends State<WelcomePage> {
             },
           ),
         ],
-        backgroundColor: Colors.transparent,
+        backgroundColor: Paleta.laranjaSuave,
         elevation: 0,
       ),
       body: Center(
@@ -64,8 +64,9 @@ class _WelcomePageState extends State<WelcomePage> {
                   ? 'Feeling like eating\nsomething today?'
                   : 'E aí, tá afim de comer o que hoje?',
               style: GoogleFonts.abel(
-                fontSize: 20,
-                color: Colors.yellow,
+                fontSize: 24,
+                color: Paleta.laranjaPredominante,
+                fontWeight: FontWeight.w700
               ), // Estilo do texto
             ),
             const SizedBox(height: 60),
@@ -73,17 +74,17 @@ class _WelcomePageState extends State<WelcomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EssenciaisPage()),
+                  MaterialPageRoute(builder: (context) => const EssenciaisPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow, // Set button color to black
+                backgroundColor: Paleta.laranjaPredominante, // Set button color to black
               ),
               child: Text(
                 isEnglish ? "Let's go" : 'Vamos lá!',
                 style: GoogleFonts.abel(
                   fontSize: 20,
-                  color: Colors.black,
+                  color: Paleta.textoBranco,
                   fontWeight: FontWeight.w600,
                 ),
               ), // Texto do botão
@@ -92,16 +93,16 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ),
       bottomNavigationBar: Container(
-        color: Colors.black,
+        color: Paleta.laranjaSuave,
         child: Container(
-          height: 50,
+          height: 40,
           child: Center(
             child: Text(
               isEnglish ? 'Developed by Daniel Girotto' : 'Desenvolvido por Daniel Girotto',
               style: GoogleFonts.abel(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.yellow,
+                color: Paleta.laranjaPredominante,
               ),
             ),
           ),

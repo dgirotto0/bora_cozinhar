@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../assets/colors/colors.dart';
 import '../assets/models/receita_model.dart';
 import '../constants/receita_card.dart';
 
@@ -12,12 +13,15 @@ class ReceitasResultadosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Paleta.laranjaSuave,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Paleta.laranjaSuave,
         title: Text(
           'AICook',
-          style: GoogleFonts.montserrat(fontSize: 20, color: Colors.yellow),
+          style: GoogleFonts.montserrat(
+              fontSize: 20,
+              color: Paleta.laranjaPredominante,
+          ),
         ),
       ),
       body: Stack(
@@ -26,7 +30,7 @@ class ReceitasResultadosPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
                     itemCount: receitas.length,

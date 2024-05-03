@@ -10,6 +10,14 @@ class Receita {
     this.ingredientes = const [],  // Set default value
     required this.descricao,
   });
+
+  Receita.fromJson(Map<String, dynamic> json)
+      : nome = json['titulo'],
+        tempoPreparo = json['tempo_preparo'],
+        ingredientes = (json['ingredientes'] as List<dynamic>)
+            .map((e) => Ingrediente(nome: e))
+            .toList(),
+        descricao = json['modo_de_preparo'];
 }
 
 class Ingrediente {

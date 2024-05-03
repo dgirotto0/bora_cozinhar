@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 Future<String?> translateQuery(String query, String targetLanguage) async {
   const translateApiUrl = 'https://translation.googleapis.com/language/translate/v2';
-  const translateApiKey = 'AIzaSyAQqfrWhfpPb89rDeNU1y8xNWGLPDmInMI';
+  const translateApiKey = 'YOUR_API_HERE'; //TODO: your api key
 
   final url = Uri.parse('$translateApiUrl?key=$translateApiKey');
 
@@ -33,7 +33,7 @@ Future<String?> translateQuery(String query, String targetLanguage) async {
   return null;
 }
 
-const pixabayApiKey = '33124447-253fa352a6d76003059187773';
+const pixabayApiKey = 'YOUR_API_KEY'; //TODO: replace with your pixabay api key
 
 Future<String?> fetchRecipeImage(String recipeName) async {
   const pixabayApiUrl = 'https://pixabay.com/api';
@@ -47,7 +47,7 @@ Future<String?> fetchRecipeImage(String recipeName) async {
     return null;
   }
 
-  final url = Uri.parse('$pixabayApiUrl?key=$pixabayApiKey&q=${translatedQuery.replaceAll('**', '')}&image_type=photo');
+  final url = Uri.parse('$pixabayApiUrl?key=$pixabayApiKey&q=${translatedQuery.replaceAll('**', '').replaceAll(' ', '%20')}&image_type=photo');
 
   try {
     final response = await http.get(url);

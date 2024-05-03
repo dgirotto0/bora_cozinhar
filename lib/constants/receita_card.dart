@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../assets/colors/colors.dart';
 import '../assets/models/receita_model.dart';
 import 'api_image.dart';
 
@@ -23,125 +23,129 @@ class _ReceitaCardState extends State<ReceitaCard> {
   }
 
   Future<void> _fetchImage() async {
-    final imageUrl = await fetchRecipeImage(widget.receita.nome);
-    setState(() {
-      _imageUrl = imageUrl;
-    });
+    if (_imageUrl == null) {
+      final imageUrl = await fetchRecipeImage(widget.receita.nome);
+      setState(() {
+        _imageUrl = imageUrl;
+      });
+    }
+  }
+
+  List<TextSpan> _highlightKeywords(String text, List<String> keywords) {
+    final List<TextSpan> spans = [];
+    int start = 0;
+
+    // Itera sobre as palavras-chave
+    for (final keyword in keywords) {
+      // Encontra todas as ocorrências da palavra-chave
+      final matches = RegExp(keyword).allMatches(text);
+      for (final match in matches) {
+        // Adiciona o texto antes da palavra-chave
+        if (match.start > start) {
+          spans.add(TextSpan(text: text.substring(start, match.start)));
+        }
+        // Adiciona a palavra-chave com destaque
+        spans.add(TextSpan(
+          text: match.group(0),
+          style: const TextStyle(
+            color: Paleta.laranjaPredominante, // Cor para destacar as palavras
+            fontWeight: FontWeight.bold,
+          ),
+        ));
+        start = match.end;
+      }
+    }
+    // Adiciona o texto restante após a última palavra-chave
+    if (start < text.length) {
+      spans.add(TextSpan(text: text.substring(start)));
+    }
+    return spans;
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(25),
+        side: const BorderSide(
+          color: Paleta.laranjaSuave,
+          width: 2
+        )
       ),
+      clipBehavior: Clip.antiAlias,
       child: Container(
-        color: Colors.black.withOpacity(0.5),
+        color: Paleta.laranjaSuave,
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
             Text(
-              widget.receita.nome.replaceAll('**', ''),
+              widget.receita.nome.replaceAll('**', '').replaceAll('Ingredientes:', 'Receita surpresa'),
               style: const TextStyle(
                 fontFamily: 'Abel',
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.yellow,
+                color: Paleta.laranjaPredominante,
               ),
             ),
-            const SizedBox(height: 20),
-            FutureBuilder<String?>(
-              future: fetchRecipeImage(widget.receita.nome),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  final imageUrl = snapshot.data!;
-                  _imageUrl != null
-                      ? ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Stack(
-                      children: [
-                        FadeInImage.assetNetwork(
-                          placeholder: 'assets/images/placeholder_image.png',
-                          image: _imageUrl!,
-                          fit: BoxFit.cover,
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          height: MediaQuery.of(context).size.height * 0.2,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                  colors: [
-                                    Colors.black.withOpacity(0.8),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
-                              child: null
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                      : const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  if (kDebugMode) {
-                    print('Error loading image: ${snapshot.error}');
-                  }
-                  return const Text('Error loading image');
-                }
-                return const CircularProgressIndicator();
-              },
-            ),
             const SizedBox(height: 10),
-
-
-
             _showFullDescription
                 ? Column(
               children: [
-                // Seção de Ingredientes
+
                 const Text(
-                  'Instruções:',
+                  'Modo de Preparo:',
                   style: TextStyle(
                     fontFamily: 'Abel',
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.yellow,
+                    color: Paleta.laranjaPredominante,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Column(
                   children: [
                     for (final ingrediente in widget.receita.ingredientes)
-                      Text(
-                        ingrediente.nome.replaceAll('**', ''),
-                        style: const TextStyle(
-                          fontFamily: 'Abel',
-                          fontSize: 16,
-                          color: Colors.white,
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Tempo de Preparo: ",
+                              style: TextStyle(
+                                fontFamily: 'Abel',
+                                fontSize: 16,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            TextSpan(
+                              text: ingrediente.nome.replaceAll('**', '').replaceAll('Tempo de Preparo:', '').replaceAll('Tempo de preparo:', ''),
+                              style: const TextStyle(
+                                fontFamily: 'Abel',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Paleta.laranjaPredominante,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                   ],
                 ),
                 const SizedBox(height: 10),
 
-
-                Text(
-                  widget.receita.descricao.replaceAll('**', ''),
-                  style: const TextStyle(
-                    fontFamily: 'Abel',
-                    fontSize: 16,
-                    color: Colors.white,
+                RichText(
+                  text: TextSpan(
+                    children: _highlightKeywords(
+                      widget.receita.descricao.replaceAll('**', '').replaceAll('*', '•'),
+                      ['Ingredientes:', 'Instruções:', 'Dicas:'],
+                    ),
+                    style: TextStyle(
+                      fontFamily: 'Abel',
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -156,7 +160,7 @@ class _ReceitaCardState extends State<ReceitaCard> {
                 ElevatedButton(
                   onPressed: () => setState(() => _showFullDescription = !_showFullDescription),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
+                    backgroundColor: Paleta.laranjaPredominante,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   ),
                   child: Text(
@@ -164,7 +168,7 @@ class _ReceitaCardState extends State<ReceitaCard> {
                     style: const TextStyle(
                       fontFamily: 'Abel',
                       fontSize: 16,
-                      color: Colors.black,
+                      color: Paleta.laranjaSuave,
                     ),
                   ),
                 ),

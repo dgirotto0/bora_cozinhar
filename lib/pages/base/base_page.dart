@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../../assets/colors/colors.dart';
 import '../../constants/ingredients_controller.dart';
 import '../../constants/language_state.dart';
 
@@ -11,6 +12,7 @@ class BasePage extends StatefulWidget {
   final String pageTitle;
   final List<String> ingredientNames;
   final Widget nextPage;
+
   const BasePage({
     super.key,
     required this.pageTitle,
@@ -39,34 +41,39 @@ class _BasePageState extends State<BasePage> {
   Widget build(BuildContext context) {
     bool isEnglish = languageState.isEnglish;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Paleta.fundoBranco,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Paleta.laranjaSuave,
         title: Text(
           isEnglish ? "AICook" : 'AICook',
-          style: GoogleFonts.montserrat(fontSize: 20, color: Colors.yellow),
+          style: GoogleFonts.montserrat(
+              fontSize: 22,
+              color: Paleta.laranjaPredominante,
+              fontWeight: FontWeight.w500),
         ),
         actions: [
           IconButton(
             icon: const Icon(
               Icons.translate,
-              color: Colors.yellow,
+              color: Paleta.laranjaPredominante,
             ),
             onPressed: () async {
               languageState.toggleLanguage();
               if (isEnglish) {
-                final translatedTitle = await translateQuery(widget.pageTitle, 'en');
+                final translatedTitle =
+                    await translateQuery(widget.pageTitle, 'en');
                 setState(() {
                   _currentTitle = translatedTitle ?? widget.pageTitle;
                 }); // Update title first
 
-                final translatedIngredients = await Future.wait(
-                    widget.ingredientNames.map((ingredient) => translateQuery(ingredient, 'en').then((result) => result ?? '')));
+                final translatedIngredients = await Future.wait(widget
+                    .ingredientNames
+                    .map((ingredient) => translateQuery(ingredient, 'en')
+                        .then((result) => result ?? '')));
                 setState(() {
                   _currentIngredientNames = translatedIngredients.toList();
                 });
               } else {
-
                 setState(() {
                   _currentTitle = widget.pageTitle;
                   _currentIngredientNames = widget.ingredientNames;
@@ -87,8 +94,8 @@ class _BasePageState extends State<BasePage> {
                   _currentTitle,
                   style: GoogleFonts.abel(
                       fontSize: 28,
-                      color: Colors.yellow,
-                      fontWeight: FontWeight.w500),
+                      color: Paleta.laranjaPredominante,
+                      fontWeight: FontWeight.w700),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
@@ -102,7 +109,7 @@ class _BasePageState extends State<BasePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.yellow,
+                      backgroundColor: Paleta.laranjaPredominante,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(
@@ -110,7 +117,7 @@ class _BasePageState extends State<BasePage> {
                   child: Text('Next',
                       style: GoogleFonts.abel(
                           fontSize: 20,
-                          color: Colors.black,
+                          color: Paleta.textoBranco,
                           fontWeight: FontWeight.bold)),
                 ),
               ],
@@ -121,10 +128,11 @@ class _BasePageState extends State<BasePage> {
     );
   }
 
-
   Future<String?> translateQuery(String query, String targetLanguage) async {
-    const translateApiUrl = 'https://translation.googleapis.com/language/translate/v2';
-    const translateApiKey = 'AIzaSyAQqfrWhfpPb89rDeNU1y8xNWGLPDmInMI'; // Replace with your actual key
+    const translateApiUrl =
+        'https://translation.googleapis.com/language/translate/v2';
+    const translateApiKey =
+        'YOUR_API_KEY'; //TODO: your api key
     final url = Uri.parse('$translateApiUrl?key=$translateApiKey');
     try {
       final response = await http.post(url,
@@ -135,7 +143,8 @@ class _BasePageState extends State<BasePage> {
           }));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final translatedText = data['data']['translations'][0]['translatedText'];
+        final translatedText =
+            data['data']['translations'][0]['translatedText'];
         return translatedText;
       } else {
         if (kDebugMode) {
@@ -150,25 +159,26 @@ class _BasePageState extends State<BasePage> {
     return null;
   }
 
-  List<Widget> buildIngredientCheckboxList(BuildContext context, bool isEnglish) {
+  List<Widget> buildIngredientCheckboxList(
+      BuildContext context, bool isEnglish) {
     return _currentIngredientNames.map((ingredientName) {
       return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Container(
             decoration: BoxDecoration(
-                color: Colors.grey[900],
+                color: Paleta.laranjaSuave,
                 borderRadius: BorderRadius.circular(10)),
             child: Theme(
               data: ThemeData(
-                unselectedWidgetColor: Colors.grey[400],
+                unselectedWidgetColor: Paleta.laranjaSuave,
               ),
               child: CheckboxListTile(
                 title: Text(
                   ingredientName,
                   style: GoogleFonts.abel(
                       fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500),
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w700),
                 ),
                 value:
                     Provider.of<IngredientsController>(context, listen: false)
@@ -186,12 +196,9 @@ class _BasePageState extends State<BasePage> {
                   Provider.of<IngredientsController>(context, listen: false)
                       .updateSelectedVegetables(newIngredients);
                 },
-                activeColor: Colors.yellow,
-                checkColor: Colors.black,
+                activeColor: Paleta.laranjaPredominante,
+                checkColor: Paleta.textoBranco,
                 controlAffinity: ListTileControlAffinity.platform,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50.0),
-                ),
               ),
             ),
           ));
