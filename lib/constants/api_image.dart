@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 Future<String?> translateQuery(String query, String targetLanguage) async {
   const translateApiUrl = 'https://translation.googleapis.com/language/translate/v2';
-  const translateApiKey = 'YOUR_API_HERE'; //TODO: your api key
+  const translateApiKey = 'YOUR_API_KEY'; //TODO: your api key
 
   final url = Uri.parse('$translateApiUrl?key=$translateApiKey');
 

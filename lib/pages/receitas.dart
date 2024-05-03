@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +33,7 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
     super.initState();
     model = GenerativeModel(
       model: 'gemini-pro',
-      apiKey: 'YOU_API_HERE', //TODO: your gemini pro api key here
+      apiKey: 'YOUR_API_KEY' //TODO: replace with your api key
     );
     _controller = AnimationController(
       vsync: this,
@@ -77,7 +78,7 @@ class _ReceitasPageState extends State<ReceitasPage> with TickerProviderStateMix
       if (!mounted) return;
 
       final generativeAI = GenerativeAI(
-        apiKey: 'YOU_API_KEY', //TODO: your gemini pro api key here
+        apiKey: 'YOUR_API_KEY' //TODO: replace with your api key
       );
 
       final prompt = "Escreva uma receita com ${widget.selectedIngredients?.join(', ')}";
