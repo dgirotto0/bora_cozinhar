@@ -10,7 +10,6 @@ Um aplicativo Flutter dinâmico que revoluciona a maneira como você cozinha. Co
 - [Recursos](#recursos)
 - [Como Usar](#como-usar)
 - [Contribuições](#contribuições)
-- [Licença](#licença)
 
 ## 📌 Screenshots
 
